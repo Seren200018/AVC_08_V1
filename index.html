@@ -39,12 +39,19 @@
   .sheet.behind:hover {
     box-shadow: 0 2mm 8mm rgba(200, 200, 0, .6);
   }
+  video {
+    object-fit: fill;
+  }
   </style>
   <style>
+
+
     .Titlepage.Background {
       background-repeat: no-repeat;
-      background-size: cover;
-      background-image: url('img/generated_video-2.gif');
+
+      background: url(img/bg_gif/generated_video.webp) no-repeat;
+      background-size: cover; 
+      <!--background-image: url('img/generated_video-2.gif'); --!>
     }
 
     .Titlepage.Series {
@@ -114,6 +121,7 @@
 <!-- Each sheet element should have the class "sheet" -->
 <!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
 <section class="sheet Titlepage Background">
+
 
   <!-- Write HTML just like a web page -->
   <div class="abstract">
