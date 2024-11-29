@@ -11,14 +11,15 @@
       }
     };
   </script>
-  <!-- Normalize or reset CSS with your favorite library -->
+  <link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>  <!-- Normalize or reset CSS with your favorite library -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" rel="stylesheet">
 
   <!-- Load paper.css for happy printing -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css" rel="stylesheet">
   <link href="https://latex.vercel.app/style.css" rel="stylesheet">
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+  <script src="js/app.js"></script>
 
   <!-- Set page size here: A5, A4 or A3 -->
   <!-- Set also "landscape" if you need -->
@@ -50,8 +51,8 @@
       background-repeat: no-repeat;
 
       background: url(img/bg_gif/generated_video.webp) no-repeat;
-      background-size: cover; 
-      <!--background-image: url('img/generated_video-2.gif'); --!>
+      background-size: cover;
+      <!--background-image: url('img/generated_video-2.gif'); -->
     }
 
     .Titlepage.Series {
@@ -160,7 +161,12 @@
   \begin{equation}
   m\ddot{x}+k\dot{x}+kx=F_A
   \end{equation}
+  <script>
+    var t = mathjs.range(0,10,100,true);
+    var MSD = mass_spring_damper(1,0.1,1);
+    var y = MSD.solvemsd(t,[0.1,0]);
 
+  </script>
 </section>
 </body>
 
