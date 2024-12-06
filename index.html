@@ -19,7 +19,11 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css" rel="stylesheet">
   <link href="https://latex.vercel.app/style.css" rel="stylesheet">
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script src="js/app.js"></script>
+
+  <script type="text/javascript" charset="UTF-8"
+          src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js"></script>
+  <link rel="stylesheet"
+        type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
 
   <!-- Set page size here: A5, A4 or A3 -->
   <!-- Set also "landscape" if you need -->
@@ -52,7 +56,7 @@
 
       background: url(img/bg_gif/generated_video.webp) no-repeat;
       background-size: cover;
-      <!--background-image: url('img/generated_video-2.gif'); -->
+
     }
 
     .Titlepage.Series {
@@ -135,7 +139,7 @@
       Wenn einer ausrastet damit der andere stehenbleibt
     </p>
     <p
-      style="font-family: Arial, Helvetica, sans-serif;font-style: italic; color: white;position: relative; top: 12cm; line-height: 1cm; font-size: 15px; font-weight: 500;text-align:center">
+            style="font-family: Arial, Helvetica, sans-serif;font-style: italic; color: white;position: relative; top: 12cm; line-height: 1cm; font-size: 15px; font-weight: 500;text-align:center">
       Dr.-Ing. Christian Pommer
     </p>
   </div>
@@ -161,13 +165,25 @@
   \begin{equation}
   m\ddot{x}+k\dot{x}+kx=F_A
   \end{equation}
-  <script>
-    var t = mathjs.range(0,10,100,true);
-    var MSD = mass_spring_damper(1,0.1,1);
-    var y = MSD.solvemsd(t,[0.1,0]);
 
-  </script>
+  <div id="app"  class="jxgbox" style='width:200px; height:200px;' ></div>
+
+  <script type="module" src="src/SpringMassDamper.mjs"></script>
+
 </section>
 </body>
 
 </html>
+<!--
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>-->
