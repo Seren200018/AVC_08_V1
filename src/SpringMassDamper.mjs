@@ -95,19 +95,22 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
   let y = [];
   let yp = [];
   let EKP = [];
+  let p;
+  let ypoint = 0;
+  let yppoint = 0;
+  let EKPpoint = 0;
+
   let axmin = -0.1;
   let axmax = max_x_width+5;
 
   let last_t = 0
   let board  //JXG.JSXGraph.initBoard('app',{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
 
-
-
   //let y= math.zeros(Pointnumber).toArray();
  // let t = math.range(0,10,0.3,true).toArray();
   let scrollold = document.getScroll();
 
-  let MSD = new mass_spring_damper(1, 0.1, 15);
+  let MSD = new mass_spring_damper(1, 0.1, 10);
   let g3, ax, ax2
   if (plottype == "time")
   {
@@ -136,7 +139,7 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
   }
   else if (plottype == "3denergy")
   {
-    board = JXG.JSXGraph.initBoard('app',{boundingbox: [-10, 8, 8, -8],pan: {enabled:false},showNavigation:false,});
+    board = JXG.JSXGraph.initBoard('app',{boundingbox: [-10,6 , 8, -6],pan: {enabled:false},showNavigation:false,});
 
     let bound = [-1, 1];
     let view = board.create('view3d',
@@ -144,36 +147,27 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
           [8, 8],
           [bound, bound, [0, 1]]],
         {
-          // Main axes
-          axesPosition: 'center',
-          xAxis: { strokeColor: 'blue', strokeWidth: 3},
+          xPlaneRear: { visible: false },
+          yPlaneRear: { visible: false },
 
-          // Planes
-          xPlaneRear: { fillColor: 'yellow',  mesh3d: {visible: false}},
-          yPlaneFront: { visible: true, fillColor: 'blue'},
-
-          // Axes on planes
-          xPlaneRearYAxis: {strokeColor: 'red'},
-          xPlaneRearZAxis: {strokeColor: 'red'},
-
-          yPlaneFrontXAxis: {strokeColor: 'blue'},
-          yPlaneFrontZAxis: {strokeColor: 'blue'},
-
-          zPlaneFrontXAxis: {visible: false},
-          zPlaneFrontYAxis: {visible: false}
+          xAxis: { strokeColor: 'blue'},
         });
-    let g3 = view.create('curve3d', [y,yp,EKP], {
-      strokeWidth: 4
+    let g3 = view.create('curve3d', [y, yp, EKP], {
+      strokeWidth: 2, strokeColor: SecColor
     });
-    const Daempfungskonstante = MSD.c/(2*math.sqrt(MSD.m*MSD.k))
+    const Daempfungskonstante = MSD.c/(2*Math.sqrt(MSD.m*MSD.k))
 
-    var c = view.create('parametricsurface3d', [
-      (t,x) => Math.cos(t),
-      (t,x) => Math.sin(t),
-      (t,x) => Math.exp(-t*Daempfungskonstante),
-      [0, 100],
-        [-1,1]
-    ])
+    p = view.create('point3d', [ypoint,yppoint,EKPpoint])
+    p.setName("");
+
+    let c = view.create('parametricsurface3d', [
+      (t,a) => Math.cos(a)*Math.exp(-t*t*Daempfungskonstante),
+      (t,a) => Math.sin(a)*Math.exp(-t*t*Daempfungskonstante),
+      (t,a) => Math.exp(-t*t*Daempfungskonstante)*Math.exp(-t*t*Daempfungskonstante),
+      [0, Math.sqrt(-1*Math.log(0.01)/Daempfungskonstante)],
+        [0,2*Math.PI]
+    ],{
+      strokeColor: '#BBBBBB'})
   }
 
 
@@ -210,6 +204,10 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
           (1/2*MSD.k*1)
       )
 
+      ypoint    = y.slice(-1);
+      yppoint   = yp.slice(-1);
+      EKPpoint  = EKP.slice(-1);
+      if (p != undefined)  p.setPosition([ypoint, yppoint, EKPpoint])
       x_0 = out[1];
     }
 
@@ -238,10 +236,12 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
       }
     }
     board.update();
+    window.requestAnimationFrame(Calc_and_draw);
     //let Bounding_Box = []
     }
   //window.requestAnimationFrame(Calc_and_draw);
-  setInterval(Calc_and_draw,100);
+  window.requestAnimationFrame(Calc_and_draw);
+  //setInterval(Calc_and_draw,25);
 }
 
 function drawmassspringdamper()
