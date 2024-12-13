@@ -83,7 +83,7 @@ document.getScroll = function() {
 }
 
 
-function livemassspringdamper(plottype = "time",scrollexitation = false )
+function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
 {
 
   let t_max = 100;
@@ -101,45 +101,43 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
   let EKPpoint = 0;
 
   let axmin = -0.1;
+  if (plottype = "energy")
+      axmin=0;
   let axmax = max_x_width+5;
 
   let last_t = 0
-  let board  //JXG.JSXGraph.initBoard('app',{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
+  let board
 
   //let y= math.zeros(Pointnumber).toArray();
  // let t = math.range(0,10,0.3,true).toArray();
   let scrollold = document.getScroll();
 
-  let MSD = new mass_spring_damper(1, 0.1, 10);
+  let MSD = new mass_spring_damper(1, 0.3, 10);
   let g3, ax, ax2
-  if (plottype == "time")
+  if (plottype == "time" || plottype == "energy")
   {
-    let board = JXG.JSXGraph.initBoard('app',{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
+    board = JXG.JSXGraph.initBoard(divid,{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
 
-    let g3 = board.create('curve', [t, y], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
-    let ax = board.create('axis', [[axmin,0],[axmax,0]],{shadow:false,ticks: { visible: true,label:{anchorX: 'middle',offset: [0, -20]}} });
-    let ax2 = board.create('axis', [[axmin,-2],[axmin,2]],{shadow:false,ticks: { visible: true,label:{anchory: 'middle',offset: [-30, 0]}} });
+    if (plottype == "time")
+      g3 = board.create('curve', [t, y], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
+    if (plottype == "energy")
+      g3 = board.create('curve', [y, yp], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
+
+    ax =  board.create('axis', [[axmin,0], [axmax,0]] ,{shadow:false,ticks: { visible: true,label:{anchorX: 'middle',offset: [0, -20]}} }); //x
+    ax2 = board.create('axis', [[axmin,-2],[axmin,2]],{shadow:false,ticks: { visible: true,label:{anchory: 'middle',offset: [-30, 0]}} }); //y
 
     board.create('ticks',[ax, 30],{ticksDistance:5,shadow:false,minorTicks:4, majorHeight:20, minorHeight:4});
     let Newboundingbox = board.getBoundingBox();
     Newboundingbox[0] = 0-max_x_width*0.2
     Newboundingbox[2] = 0+max_x_width*1.1;
-    board.setBoundingBox(Newboundingbox);
-  }
-  else if (plottype == "energy")
-  {
-    board = JXG.JSXGraph.initBoard('app',{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
 
-    board.setBoundingBox([-2,2,2,-2]);
-    let g3 = board.create('curve', [y, yp], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
-    let Newboundingbox = board.getBoundingBox();
-    Newboundingbox[0] = 0-max_x_width*0.2
-    Newboundingbox[2] = 0+max_x_width*1.1;
+    if (plottype == "energy")
+      Newboundingbox = [-1.5,1.5,1.5,-1.5];
     board.setBoundingBox(Newboundingbox);
   }
   else if (plottype == "3denergy")
   {
-    board = JXG.JSXGraph.initBoard('app',{boundingbox: [-10,6 , 8, -6],pan: {enabled:false},showNavigation:false,});
+    board = JXG.JSXGraph.initBoard(divid,{boundingbox: [-10,6 , 8, -6],pan: {enabled:false},showNavigation:false,});
 
     let bound = [-1, 1];
     let view = board.create('view3d',
@@ -158,7 +156,6 @@ function livemassspringdamper(plottype = "time",scrollexitation = false )
     const Daempfungskonstante = MSD.c/(2*Math.sqrt(MSD.m*MSD.k))
 
     p = view.create('point3d', [ypoint,yppoint,EKPpoint])
-    p.setName("");
 
     let c = view.create('parametricsurface3d', [
       (t,a) => Math.cos(a)*Math.exp(-t*t*Daempfungskonstante),
@@ -257,5 +254,5 @@ function drawmassspringdamper()
 }
 
 drawmassspringdamper();
-livemassspringdamper("3denergy");
+livemassspringdamper("3denergy","app");
 //document.querySelector('#app').innerHTML = drawnfunction;
