@@ -23,11 +23,14 @@ export class mass_spring_damper {
   c = 0.1;
   k = 1;
   x = [0.1,0]; //x,xp
+  w0 = 1;
 
-  constructor(mass,damping,stiffness){
+  constructor(mass,damping,stiffness,Startbedingungen){
     this.m = mass;
     this.c = damping;
     this.k = stiffness;
+    this.x = Startbedingungen;
+    this.w0 = math.sqrt(this.m/this.k)
   }
 
   gettimeseries(tstart,tstop,points){
@@ -39,10 +42,14 @@ export class mass_spring_damper {
     return [xp, xpp];
   }
 
-  solvemsd(t_series, x_0){
+  dotimestep(dt)
+  {
+    this.solvemsd([0,dt], x0)
+  }
+  solvemsd(t_end, x_0){
     let m = this.m;
     let k = this.k;
-    let c=this.c;
+    let c = this.c;
     function mathspringdamper_sim(t, x_in){
       var xpp = - x_in[0]*k/m - x_in[1]*c/m;
       var xp = x_in[1];
@@ -54,15 +61,11 @@ export class mass_spring_damper {
     returnarray.push(x_0[0])
     this.x = x_0;
     let OdeResult =[];
-    for (let i=1;i<t_series.size();i++)
-    {
-      let OdeResultFull=(math.solveODE(mathspringdamper_sim, [0, t_series.get([i])-t_last], this.x));
-      OdeResult = OdeResultFull.y.at(-1); //last result
-      this.x = OdeResult;
-      returnarray.push(this.x[0]);
-      t_last = t_series.get([i]);
-    }
-    return [returnarray, OdeResult];
+
+
+    let OdeResultFull=(math.solveODE(mathspringdamper_sim, [0,t_end], this.x));
+    this.x = OdeResultFull.y.at(-1); //letzte position
+    return OdeResultFull;
   }
 }
 
@@ -91,9 +94,9 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   let max_x_width = 30;
   let x_0 = [1,0];
 
-  let t = [];
-  let y = [];
-  let yp = [];
+  let t = [0];
+  let y = [x_0[0]];
+  let yp = [x_0[1]];
   let EKP = [];
   let p;
   let ypoint = 0;
@@ -101,7 +104,7 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   let EKPpoint = 0;
 
   let axmin = -0.1;
-  if (plottype = "energy")
+  if (plottype == "energy")
       axmin=0;
   let axmax = max_x_width+5;
 
@@ -132,7 +135,7 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
     Newboundingbox[2] = 0+max_x_width*1.1;
 
     if (plottype == "energy")
-      Newboundingbox = [-1.5,1.5,1.5,-1.5];
+      Newboundingbox = [-1.1,1.1/MSD.w0,1.1,-1.1/MSD.w0];
     board.setBoundingBox(Newboundingbox);
   }
   else if (plottype == "3denergy")
@@ -179,33 +182,24 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
     let Cycletime = (Date.now()-Lastcycle)/1000
     Lastcycle = Date.now();
 
-    //Maximal 0.1s schritte bei Lag
     let mindt = math.sqrt(MSD.m/MSD.k)/(3.14*5)
-    let t_calc = [0]; //Berchnungsarray initiaisieren
-    //Solange 0.1s addieren bis es größer als Delay wäre
-    while (t_calc.slice(-1)[0]+mindt < Cycletime) {
-      t_calc.push(t_calc.slice(-1)[0]+mindt)
-    }
-    t_calc.push(Cycletime); //Letzter schritt ist animationsdelay
 
-    let out;
-    for (let i=1;i<t_calc.length;i++) {
-      out= MSD.solvemsd(math.matrix([0,t_calc[i]-t_calc[i-1]]),x_0);
-      t.push(t_calc[i]+last_t);
-      y.push(out[1][0]);
-      let yp_temp  = out[1][1]*math.sqrt(MSD.m/MSD.k)
-      yp.push(yp_temp)
+
+    let out = MSD.solvemsd(Cycletime,x_0);
+    for (let i = 1;i<out.t.length;i++){
+      t.push(out.t[i]+last_t);
+      y.push(out.y[i][0]);
+      yp.push(out.y[i][1]);
       EKP.push(
-          (1/2*MSD.k*out[1][0]*out[1][0]+
-          1/2*MSD.m*out[1][1]*out[1][1])/
-          (1/2*MSD.k*1)
+          (1/2*MSD.k*out.y[i][0]*out.y[i][0]+
+              1/2*MSD.m*out.y[i][1]*out.y[i][1])/
+          (1/2*MSD.k)
       )
-
       ypoint    = y.slice(-1);
       yppoint   = yp.slice(-1);
       EKPpoint  = EKP.slice(-1);
       if (p != undefined)  p.setPosition([ypoint, yppoint, EKPpoint])
-      x_0 = out[1];
+      x_0 = out.y.slice(-1)[0];
     }
 
     last_t += Cycletime;  //Leter Zeitschritt des neuen Zyklus
@@ -241,11 +235,13 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   //setInterval(Calc_and_draw,25);
 }
 
+
+
 function drawmassspringdamper()
 {
   let MSD = new mass_spring_damper(1, 0.1, 15);
   let t = MSD.gettimeseries(0, 100, 10/100);
-  let y = MSD.solvemsd(t, [1, 0])
+  let y = MSD.solvemsd(100, [1, 0])
 
   //let Bounding_Box = []
   let board2 = JXG.JSXGraph.initBoard('app2',{ boundingbox: [0, 1, 100, -1], pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: true, grid: false});
@@ -253,6 +249,6 @@ function drawmassspringdamper()
   board2.update();
 }
 
-drawmassspringdamper();
-livemassspringdamper("3denergy","app");
+//drawmassspringdamper();drawmassspringdamper();
+livemassspringdamper("energy","app");
 //document.querySelector('#app').innerHTML = drawnfunction;
