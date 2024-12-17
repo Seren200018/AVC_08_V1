@@ -97,7 +97,7 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   let t = [0];
   let y = [x_0[0]];
   let yp = [x_0[1]];
-  let EKP = [];
+  let EKP = []; 
   let p;
   let ypoint = 0;
   let yppoint = 0;
