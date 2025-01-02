@@ -1,8 +1,12 @@
 import {create, all, string} from 'mathjs';
 import * as JXG from "jsxgraph";
+import Plotly from 'plotly.js-dist-min'
+
+JXG.Options.text.useMathJax = true;
 
 const SecColor = "#FE8100"
-
+$SmjDisplayMath = [[ "\\[", "\\]" ] ];
+$SmjExtraInlineMath = [[ "\\(", "\\)" ] ]
 const config = {
   relTol: 1e-12,
   absTol: 1e-15,
@@ -89,6 +93,7 @@ document.getScroll = function() {
 function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
 {
 
+  let MSD = new mass_spring_damper(1, 0.3, 10);
   let t_max = 100;
   let Pointnumber = 200;
   let max_x_width = 30;
@@ -97,7 +102,9 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   let t = [0];
   let y = [x_0[0]];
   let yp = [x_0[1]];
-  let EKP = []; 
+  let EKP = [ (1/2*MSD.k*x_0[0]*x_0[0]+
+      1/2*MSD.m*x_0[1]*x_0[1])/
+  (1/2*MSD.k)];
   let p;
   let ypoint = 0;
   let yppoint = 0;
@@ -110,17 +117,19 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
 
   let last_t = 0
   let board
+  let fig
 
   //let y= math.zeros(Pointnumber).toArray();
  // let t = math.range(0,10,0.3,true).toArray();
   let scrollold = document.getScroll();
 
-  let MSD = new mass_spring_damper(1, 0.3, 10);
+
   let g3, ax, ax2
   if (plottype == "time" || plottype == "energy")
   {
     board = JXG.JSXGraph.initBoard(divid,{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
 
+    JXG.Options.text.useMathJax = true;
     if (plottype == "time")
       g3 = board.create('curve', [t, y], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
     if (plottype == "energy")
@@ -135,24 +144,60 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
     Newboundingbox[2] = 0+max_x_width*1.1;
 
     if (plottype == "energy")
-      Newboundingbox = [-1.1,1.1/MSD.w0,1.1,-1.1/MSD.w0];
+      Newboundingbox = [-1.1,1.1,1.1,-1.1];
     board.setBoundingBox(Newboundingbox);
   }
   else if (plottype == "3denergy")
   {
-    board = JXG.JSXGraph.initBoard(divid,{boundingbox: [-10,6 , 8, -6],pan: {enabled:false},showNavigation:false,});
+    board = JXG.JSXGraph.initBoard(
+        divid,
+        {
+          boundingbox: [-1.5,1.5,1.5,-1.5],
+          pan: {enabled:false},
+          showNavigation:false,
+        },
+    );
+
+    var butt = board.create('button', [-1.4, 1.3, 'x', function() {
+      var txt;
+      butt.value = !butt.value;
+      if (butt.value) {
+        txt = 'On';
+      } else {
+        txt = 'Off';
+      }
+      butt.rendNodeButton.innerHTML = txt;
+    }]);
+
 
     let bound = [-1, 1];
-    let view = board.create('view3d',
-        [[-6, -3],
-          [8, 8],
-          [bound, bound, [0, 1]]],
-        {
-          xPlaneRear: { visible: false },
-          yPlaneRear: { visible: false },
 
-          xAxis: { strokeColor: 'blue'},
+    let Position3D_X = -1;
+    let Position3D_Y = -1;
+    let view = board.create('view3d',
+        [[Position3D_X, Position3D_Y],
+          [2, 2],
+          [bound, bound, [0,1]]],
+        {
+          projection: 'parallel',
+          xPlaneRear: { visible: true },
+          yPlaneRear: { visible: true },
+
+          xAxis: {
+            strokeColor: 'red',
+            name: "\\[ \\dot{y} \\]",
+            withLabel: true,
+          },
+          yAxis: {
+            name: "\\[ y \\]",
+            withLabel: true,
+          },
+          zAxis: {
+            name: "\\[ E_{GES} \\]",
+            withLabel: true,
+          }
         });
+    view.setView(0,0,1)
     let g3 = view.create('curve3d', [y, yp, EKP], {
       strokeWidth: 2, strokeColor: SecColor
     });
@@ -169,7 +214,52 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
     ],{
       strokeColor: '#BBBBBB'})
   }
-
+  else if (plottype == "plotly")
+  {
+    fig = Plotly.newPlot(divid, [{
+      type: 'scatter3d',
+      mode: 'lines',
+      x: y,
+      y: yp,
+      z: EKP,
+      opacity: 1,
+      line: {
+        width: 2,
+        color: 1,
+        colorscale: 'Viridis'},
+      xref: 'paper',
+      xaxis: {
+        tickmode: 'linear',
+        autorange: false,
+        ticks: 'outside',
+        tick0: 0,
+        dtick: 0.25,
+        ticklen: 8,
+        tickwidth: 4,
+        tickcolor: '#000'
+      },
+      yaxis: {
+        tickmode: 'linear',
+        ticks: 'outside',
+        autorange: false,
+        tick0: 0,
+        dtick: 0.25,
+        ticklen: 8,
+        tickwidth: 4,
+        tickcolor: '#000'
+      },
+      zaxis: {
+        tickmode: 'linear',
+        ticks: 'outside',
+        autorange: false,
+        tick0: 0,
+        dtick: 0.25,
+        ticklen: 8,
+        tickwidth: 4,
+        tickcolor: '#000'
+      },
+    }]);
+  }
 
   let Lastcycle = Date.now();
   function Calc_and_draw() {
@@ -189,7 +279,7 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
     for (let i = 1;i<out.t.length;i++){
       t.push(out.t[i]+last_t);
       y.push(out.y[i][0]);
-      yp.push(out.y[i][1]);
+      yp.push(out.y[i][1]*MSD.w0);
       EKP.push(
           (1/2*MSD.k*out.y[i][0]*out.y[i][0]+
               1/2*MSD.m*out.y[i][1]*out.y[i][1])/
@@ -226,7 +316,11 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
         board.setBoundingBox(Newboundingbox);
       }
     }
-    board.update();
+    if (plottype != "plotly") board.update();
+    else
+    {
+      Plotly.redraw(divid)
+    }
     window.requestAnimationFrame(Calc_and_draw);
     //let Bounding_Box = []
     }
@@ -235,6 +329,10 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
   //setInterval(Calc_and_draw,25);
 }
 
+function drawmsdsvg()
+{
+  SVG=document.getElementById("SVG")
+}
 
 
 function drawmassspringdamper()
@@ -250,5 +348,7 @@ function drawmassspringdamper()
 }
 
 //drawmassspringdamper();drawmassspringdamper();
-livemassspringdamper("energy","app");
+livemassspringdamper("time","app");
+livemassspringdamper("energy","app2");
+livemassspringdamper("3denergy","app3");
 //document.querySelector('#app').innerHTML = drawnfunction;
