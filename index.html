@@ -206,8 +206,8 @@
   m\ddot{x}+k\dot{x}+kx=F_A
   \end{equation}
 
-  <div id="app"  class="jxgbox" style='border:None;overflow=hidden; width:300px; height:200px;' ></div>
-  <div id="app2"  class="jxgbox" style='border:None;width:300px; height:200px;' ></div>
+  <div id="app"  class="jxgbox" style='border:None;overflow:hidden; width:300px; height:200px;' ></div>
+  <div id="app2"  class="jxgbox" style='border:None;width:300px; height:300px;' ></div>
 
   <script type="module" src="src/SpringMassDamper.mjs"></script>
 
@@ -219,7 +219,20 @@
     <img src = "./img/smd.svg" alt="Spring Mass Damper"/>
 
   </div>
-  <svg id="svg" width="100" height="100"></svg>
+  <svg id="svg" width="100" height="100">
+    <g inkscape:groupmode="layer" inkscape:label="Ebene 1">
+      <rect transform="scale(1,-1)" x="48.683" y="-142.16" width="61.551" height="37.236"
+            fill="#f95" stroke="#666" inkscape:label="Mass" />
+      <g fill="none" stroke="#666">
+        <path class="SPMDSVG" inkscape:label="Spring"
+              d="m62.847 105.3v-5.0056l-7.4792-4.3181 14.758-8.5018-14.732-8.4372 14.849-8.4349-14.73-8.485 7.3933-4.3238-0.086-5.0257"
+              sodipodi:nodetypes="ccccccccc" />
+        <path inkscape:label="Damper"
+              d="m92.992 104.74v-25.695"/>
+      </g>
+    </g>
+
+  </svg>
 </section>
 </body>
 

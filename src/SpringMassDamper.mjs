@@ -1,12 +1,16 @@
-import {create, all, string} from 'mathjs';
-import * as JXG from "jsxgraph";
-import Plotly from 'plotly.js-dist-min'
+import { create, all } from 'mathjs';
+import * as JXG from 'jsxgraph';
+import Plotly from 'plotly.js-dist-min';
 
+// Aktiviert MathJax für JSXGraph
 JXG.Options.text.useMathJax = true;
 
-const SecColor = "#FE8100"
-$SmjDisplayMath = [[ "\\[", "\\]" ] ];
-$SmjExtraInlineMath = [[ "\\(", "\\)" ] ]
+// Farbeinstellungen und MathJax-Konfiguration
+const SecColor = '#FE8100';
+$SmjDisplayMath = [['\\[', '\\]']];
+$SmjExtraInlineMath = [['\\(', '\\)']];
+
+// Math.js-Konfiguration
 const config = {
   relTol: 1e-12,
   absTol: 1e-15,
@@ -14,208 +18,207 @@ const config = {
   number: 'number',
   precision: 64,
   predictable: false,
-  randomSeed: null
+  randomSeed: null,
 };
 const math = create(all, config);
-function linspace(start, stop, num, endpoint = true) {
-  const div = endpoint ? (num - 1) : num;
-  const step = (stop - start) / div;
-  return Array.from({length: num}, (_, i) => start + step * i);
-}
-export class mass_spring_damper {
-  m = 1;
-  c = 0.1;
-  k = 1;
-  x = [0.1,0]; //x,xp
-  w0 = 1;
 
-  constructor(mass,damping,stiffness,Startbedingungen){
+// Funktion: Erzeugt eine gleichmäßige Verteilung zwischen zwei Werten
+function linspace(start, stop, num, endpoint = true) {
+  const div = endpoint ? num - 1 : num;
+  const step = (stop - start) / div;
+  return Array.from({ length: num }, (_, i) => start + step * i);
+}
+
+// Klasse: Modelliert ein Masse-Feder-Dämpfer-System
+export class mass_spring_damper {
+  m = 1; // Standardmasse
+  c = 0.1; // Standarddämpfungskoeffizient
+  k = 1; // Standardfederkonstante
+  x = [0.1, 0]; // Anfangsposition und Anfangsgeschwindigkeit
+  w0 = 1; // Eigenfrequenz
+
+  constructor(mass, damping, stiffness, initialConditions) {
     this.m = mass;
     this.c = damping;
     this.k = stiffness;
-    this.x = Startbedingungen;
-    this.w0 = math.sqrt(this.m/this.k)
+    this.x = initialConditions;
+    this.w0 = math.sqrt(this.m / this.k); // Eigenfrequenz berechnen
   }
 
-  gettimeseries(tstart,tstop,points){
-    return math.range(tstart,tstop,points,true);
+  // Erzeugt eine Zeitreihe
+  gettimeseries(tstart, tstop, points) {
+    return math.range(tstart, tstop, points, true);
   }
-  mathspringdamper_sim(t, x_in){
-    var xpp = -x_in[1]*this.k/this.m - x_in[0]*this.c/this.m;
-    var xp = x_in[1];
+
+  // Simulationsfunktion: Berechnet neue Geschwindigkeit und Beschleunigung
+  mathspringdamper_sim(t, x_in) {
+    const xpp = -x_in[1] * this.k / this.m - x_in[0] * this.c / this.m; // Beschleunigung
+    const xp = x_in[1]; // Geschwindigkeit
     return [xp, xpp];
   }
 
-  dotimestep(dt)
-  {
-    this.solvemsd([0,dt], x0)
+  // Führt eine Zeitschrittberechnung aus (aktuell nicht implementiert)
+  dotimestep(dt) {
+    this.solvemsd([0, dt], this.x);
   }
-  solvemsd(t_end, x_0){
-    let m = this.m;
-    let k = this.k;
-    let c = this.c;
-    function mathspringdamper_sim(t, x_in){
-      var xpp = - x_in[0]*k/m - x_in[1]*c/m;
-      var xp = x_in[1];
+
+  // Löser für das Masse-Feder-Dämpfer-System
+  solvemsd(t_end, x_0, max_timestep = 1) {
+    const m = this.m;
+    const k = this.k;
+    const c = this.c;
+
+    // Funktion zur Berechnung der Dynamik des Systems
+    function mathspringdamper_sim(t, x_in) {
+      const xpp = -x_in[0] * k / m - x_in[1] * c / m; // Beschleunigung
+      const xp = x_in[1]; // Geschwindigkeit
       return [xp, xpp];
     }
 
-    let t_last=0;
-    let returnarray = [];
-    returnarray.push(x_0[0])
+    // Initialisierungen für die Simulation
+    const returnArray = [x_0[0]]; // Anfangsposition speichern
     this.x = x_0;
-    let OdeResult =[];
 
+    // Differentialgleichung lösen
+    const OdeResultFull = math.solveODE(mathspringdamper_sim, [0, t_end], this.x, {maxStep: max_timestep});
 
-    let OdeResultFull=(math.solveODE(mathspringdamper_sim, [0,t_end], this.x));
-    this.x = OdeResultFull.y.at(-1); //letzte position
+    // Aktualisiert den Zustand auf die letzte berechnete Position
+    this.x = OdeResultFull.y.at(-1);
     return OdeResultFull;
   }
 }
 
-
-document.getScroll = function() {
-  if (window.pageYOffset != undefined) {
+// Funktion: Ruft die aktuelle Scroll-Position ab
+document.getScroll = function () {
+  if (window.pageYOffset !== undefined) {
     return [pageXOffset, pageYOffset];
   } else {
-    var sx, sy, d = document,
+    const d = document,
         r = d.documentElement,
         b = d.body;
-    sx = r.scrollLeft || b.scrollLeft || 0;
-    sy = r.scrollTop || b.scrollTop || 0;
+
+    const sx = r.scrollLeft || b.scrollLeft || 0;
+    const sy = r.scrollTop || b.scrollTop || 0;
+
     console.log(sy);
     return [sy];
-
   }
-}
+};
 
+function livemassspringdamper(plottype = "time", divid, scrollexitation = false) {
+  // Initialisiere das Masse-Feder-Dämpfer-System
+  const MSD = new mass_spring_damper(1, 0.3, 10);
 
-function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
-{
+  // Parameter und Anfangswerte
+  const max_x_width = 30; // Maximal sichtbare Breite
+  let x_0 = [1, 0]; // Startbedingungen: Position und Geschwindigkeit
+  const axmax = max_x_width + 5; // Maximale Achsenbreite
+  let t = [0], y = [x_0[0]], yp = [x_0[1]];
 
-  let MSD = new mass_spring_damper(1, 0.3, 10);
-  let t_max = 100;
-  let Pointnumber = 200;
-  let max_x_width = 30;
-  let x_0 = [1,0];
+  // Anfangsenergie berechnen (normiert auf maximale Energie)
+  let EKP = [
+    (0.5 * MSD.k * x_0[0] ** 2 + 0.5 * MSD.m * x_0[1] ** 2) / (0.5 * MSD.k)
+  ];
 
-  let t = [0];
-  let y = [x_0[0]];
-  let yp = [x_0[1]];
-  let EKP = [ (1/2*MSD.k*x_0[0]*x_0[0]+
-      1/2*MSD.m*x_0[1]*x_0[1])/
-  (1/2*MSD.k)];
-  let p;
-  let ypoint = 0;
-  let yppoint = 0;
-  let EKPpoint = 0;
+  // Grenzwerte für die Achsen
+  let axmin = plottype === "energy" ? 0 : -0.1;
 
-  let axmin = -0.1;
-  if (plottype == "energy")
-      axmin=0;
-  let axmax = max_x_width+5;
+  // Scrollzustand initialisieren
+  let scrollold = document.getScroll(), last_t = 0;
 
-  let last_t = 0
-  let board
-  let fig
+  let board, fig, p;
 
-  //let y= math.zeros(Pointnumber).toArray();
- // let t = math.range(0,10,0.3,true).toArray();
-  let scrollold = document.getScroll();
-
-
-  let g3, ax, ax2
-  if (plottype == "time" || plottype == "energy")
-  {
-    board = JXG.JSXGraph.initBoard(divid,{shadow: true, boundingbox: [0, 2, 40, -2],pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: false, grid: false});
-
-    JXG.Options.text.useMathJax = true;
-    if (plottype == "time")
-      g3 = board.create('curve', [t, y], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
-    if (plottype == "energy")
-      g3 = board.create('curve', [y, yp], {strokeColor: SecColor, strokeWidth: '2px', shadow: true});
-
-    ax =  board.create('axis', [[axmin,0], [axmax,0]] ,{shadow:false,ticks: { visible: true,label:{anchorX: 'middle',offset: [0, -20]}} }); //x
-    ax2 = board.create('axis', [[axmin,-2],[axmin,2]],{shadow:false,ticks: { visible: true,label:{anchory: 'middle',offset: [-30, 0]}} }); //y
-
-    board.create('ticks',[ax, 30],{ticksDistance:5,shadow:false,minorTicks:4, majorHeight:20, minorHeight:4});
-    let Newboundingbox = board.getBoundingBox();
-    Newboundingbox[0] = 0-max_x_width*0.2
-    Newboundingbox[2] = 0+max_x_width*1.1;
-
-    if (plottype == "energy")
-      Newboundingbox = [-1.1,1.1,1.1,-1.1];
-    board.setBoundingBox(Newboundingbox);
+  // Board-Initialisierung basierend auf dem Typ der Darstellung
+  if (plottype === "time" || plottype === "energy") {
+    boardSetup();
+  } else if (plottype === "3denergy") {
+    init3DEnergyView();
+  } else if (plottype === "plotly") {
+    initPlotlyView();
   }
-  else if (plottype == "3denergy")
-  {
-    board = JXG.JSXGraph.initBoard(
-        divid,
-        {
-          boundingbox: [-1.5,1.5,1.5,-1.5],
-          pan: {enabled:false},
-          showNavigation:false,
-        },
-    );
 
-    var butt = board.create('button', [-1.4, 1.3, 'x', function() {
-      var txt;
-      butt.value = !butt.value;
-      if (butt.value) {
-        txt = 'On';
-      } else {
-        txt = 'Off';
-      }
-      butt.rendNodeButton.innerHTML = txt;
-    }]);
+  // Zeitzyklus starten
+  let lastCycle = Date.now();
+  window.requestAnimationFrame(Calc_and_draw);
 
-
-    let bound = [-1, 1];
-
-    let Position3D_X = -1;
-    let Position3D_Y = -1;
-    let view = board.create('view3d',
-        [[Position3D_X, Position3D_Y],
-          [2, 2],
-          [bound, bound, [0,1]]],
-        {
-          projection: 'parallel',
-          xPlaneRear: { visible: true },
-          yPlaneRear: { visible: true },
-
-          xAxis: {
-            strokeColor: 'red',
-            name: "\\[ \\dot{y} \\]",
-            withLabel: true,
-          },
-          yAxis: {
-            name: "\\[ y \\]",
-            withLabel: true,
-          },
-          zAxis: {
-            name: "\\[ E_{GES} \\]",
-            withLabel: true,
-          }
-        });
-    view.setView(0,0,1)
-    let g3 = view.create('curve3d', [y, yp, EKP], {
-      strokeWidth: 2, strokeColor: SecColor
+  /**
+   * Initialisiert das 2D-Board (für Zeit- oder Energiedarstellung).
+   */
+  function boardSetup() {
+    board = JXG.JSXGraph.initBoard(divid, {
+      boundingbox: [0, 2, 40, -2],
+      pan: { enabled: false },
+      showNavigation: false,
+      browserPan: { enabled: false },
+      axis: false,
+      grid: false,
     });
-    const Daempfungskonstante = MSD.c/(2*Math.sqrt(MSD.m*MSD.k))
 
-    p = view.create('point3d', [ypoint,yppoint,EKPpoint])
+    // Erstelle die Kurve für Zeit- oder Energiedarstellung
+    if (plottype === "time") {
+      board.create('curve', [t, y], {
+        strokeColor: SecColor,
+        strokeWidth: '2px',
+        shadow: true,
+      });
+    } else if (plottype === "energy") {
+      board.create('curve', [y, yp], {
+        strokeColor: SecColor,
+        strokeWidth: '2px',
+        shadow: true,
+      });
+    }
 
-    let c = view.create('parametricsurface3d', [
-      (t,a) => Math.cos(a)*Math.exp(-t*t*Daempfungskonstante),
-      (t,a) => Math.sin(a)*Math.exp(-t*t*Daempfungskonstante),
-      (t,a) => Math.exp(-t*t*Daempfungskonstante)*Math.exp(-t*t*Daempfungskonstante),
-      [0, Math.sqrt(-1*Math.log(0.01)/Daempfungskonstante)],
-        [0,2*Math.PI]
-    ],{
-      strokeColor: '#BBBBBB'})
+    // Achsen erstellen
+    const xAxis = board.create('axis', [[axmin, 0], [axmax, 0]], {
+      ticks: { visible: true, label: { anchorX: 'middle', offset: [0, -20] } },
+    });
+    const yAxis = board.create('axis', [[axmin, -2], [axmin, 2]], {
+      ticks: { visible: true, label: { anchorY: 'middle', offset: [-30, 0] } },
+    });
+    board.create('ticks', [xAxis, 30], { ticksDistance: 5, minorTicks: 4 });
+
+    // Passe den sichtbaren Bereich an
+    adjustBoundingBox(plottype === "energy" ? [-1.1, 1.1, 1.1, -1.1] : [0 - max_x_width * 0.2, 2, max_x_width + max_x_width * 0.2, -2]);
   }
-  else if (plottype == "plotly")
-  {
+
+  /**
+   * Initialisiert die 3D-Energiedarstellung.
+   */
+  function init3DEnergyView() {
+    board = JXG.JSXGraph.initBoard(divid, {
+      boundingbox: [-1.5, 1.5, 1.5, -1.5],
+      pan: { enabled: false },
+      showNavigation: false,
+    });
+
+    const view = board.create('view3d', [
+      [-1, -1],
+      [2, 2],
+      [[-1, 1], [-1, 1], [0, 1]],
+    ], {
+      projection: 'parallel',
+      xPlaneRear: { visible: true },
+      yPlaneRear: { visible: true },
+      xAxis: { strokeColor: 'red', name: "\\[ \\dot{y} \\]", withLabel: true },
+      yAxis: { name: "\\[ y \\]", withLabel: true },
+      zAxis: { name: "\\[ E_{GES} \\]", withLabel: true },
+    });
+
+    view.setView(0, 0, 1);
+
+    // Energiekurve in 3D
+    const g3 = view.create('curve3d', [y, yp, EKP], {
+      strokeWidth: 2,
+      strokeColor: SecColor,
+    });
+    p = view.create('point3d', [0, 0, 0]);
+  }
+
+  /**
+   * Initialisiert die 3D-Darstellung mit Plotly.
+   */
+  function initPlotlyView() {
     fig = Plotly.newPlot(divid, [{
       type: 'scatter3d',
       mode: 'lines',
@@ -223,115 +226,129 @@ function livemassspringdamper(plottype = "time",divid, scrollexitation = false )
       y: yp,
       z: EKP,
       opacity: 1,
-      line: {
-        width: 2,
-        color: 1,
-        colorscale: 'Viridis'},
-      xref: 'paper',
-      xaxis: {
-        tickmode: 'linear',
-        autorange: false,
-        ticks: 'outside',
-        tick0: 0,
-        dtick: 0.25,
-        ticklen: 8,
-        tickwidth: 4,
-        tickcolor: '#000'
-      },
-      yaxis: {
-        tickmode: 'linear',
-        ticks: 'outside',
-        autorange: false,
-        tick0: 0,
-        dtick: 0.25,
-        ticklen: 8,
-        tickwidth: 4,
-        tickcolor: '#000'
-      },
-      zaxis: {
-        tickmode: 'linear',
-        ticks: 'outside',
-        autorange: false,
-        tick0: 0,
-        dtick: 0.25,
-        ticklen: 8,
-        tickwidth: 4,
-        tickcolor: '#000'
-      },
+      line: { width: 2, colorscale: 'Viridis' },
     }]);
   }
 
-  let Lastcycle = Date.now();
+  /**
+   * Hauptberechnungs- und Darstellungsfunktion.
+   */
   function Calc_and_draw() {
     let scrollnew = document.getScroll();
-    if (scrollexitation){
-        x_0 = [scrollnew[1]/100-scrollold[1]/100+x_0[0],x_0[1]]}
-    scrollold=scrollnew;
-    //let Result =math.solveODE(MSD.mathspringdamper_sim, [0, 0.1], x_0)
+    if (scrollexitation) {
+      x_0[0] += (scrollnew[1] - scrollold[1]) / 100;
+    }
+    scrollold = scrollnew;
 
-    let Cycletime = (Date.now()-Lastcycle)/1000
-    Lastcycle = Date.now();
+    const cycleTime = (Date.now() - lastCycle) / 1000;
+    lastCycle = Date.now();
 
-    let mindt = math.sqrt(MSD.m/MSD.k)/(3.14*5)
+    const out = MSD.solvemsd(cycleTime, x_0, 0.5/MSD.w0);
 
-
-    let out = MSD.solvemsd(Cycletime,x_0);
-    for (let i = 1;i<out.t.length;i++){
-      t.push(out.t[i]+last_t);
+    // Aktualisiere Zeit, Werte und Energie
+    for (let i = 1; i < out.t.length; i++) {
+      let time = out.t[i] + last_t;
+      t.push(time);
       y.push(out.y[i][0]);
-      yp.push(out.y[i][1]*MSD.w0);
-      EKP.push(
-          (1/2*MSD.k*out.y[i][0]*out.y[i][0]+
-              1/2*MSD.m*out.y[i][1]*out.y[i][1])/
-          (1/2*MSD.k)
-      )
-      ypoint    = y.slice(-1);
-      yppoint   = yp.slice(-1);
-      EKPpoint  = EKP.slice(-1);
-      if (p != undefined)  p.setPosition([ypoint, yppoint, EKPpoint])
+      yp.push(out.y[i][1] * MSD.w0);
+      EKP.push((0.5 * MSD.k * out.y[i][0] ** 2 + 0.5 * MSD.m * out.y[i][1] ** 2) / (0.5 * MSD.k));
+
+      if (p) p.setPosition([y[y.length - 1], yp[yp.length - 1], EKP[EKP.length - 1]]);
       x_0 = out.y.slice(-1)[0];
     }
 
-    last_t += Cycletime;  //Leter Zeitschritt des neuen Zyklus
+    last_t += cycleTime;
 
-    if (plottype == "time") {
-      if (((1 / 1.1 < math.max(y)) ||
-          (-1 / 1.1 > math.min(y))
-      )
-      ) {
-        let Newboundingbox = board.getBoundingBox();
-        let range = ((math.max(y) > math.min(y) * -1) ? math.max(y) : math.min(y) * -1)
-        Newboundingbox[1] = range * 1.1;
-        Newboundingbox[3] = range * -1.1;
-        board.setBoundingBox(Newboundingbox);
-      }
-      while (last_t - board.getBoundingBox()[0] > max_x_width) {
-        t.shift();
-        y.shift();
-        yp.shift();
-        let Newboundingbox = board.getBoundingBox();
-        axmin = t[0] - max_x_width * 0.2;
-        Newboundingbox[0] = t[0] - max_x_width * 0.2
-        Newboundingbox[2] = t[0] + max_x_width * 1.1;
-        board.setBoundingBox(Newboundingbox);
-      }
+    // Passe den Bereich für Zeitplots dynamisch an
+    if (plottype === "time") adjustBoundingBoxForTime();
+
+    // Aktualisiere die Darstellung
+    if (plottype !== "plotly") {
+      board.update();
+    } else {
+      Plotly.redraw(divid);
     }
-    if (plottype != "plotly") board.update();
-    else
-    {
-      Plotly.redraw(divid)
-    }
+
     window.requestAnimationFrame(Calc_and_draw);
-    //let Bounding_Box = []
+  }
+
+  /**
+   * Anpassung des Plots für Zeitdarstellungen bei Überschreitung der Grenzen.
+   */
+  function adjustBoundingBoxForTime() {
+    const maxY = Math.max(...y), minY = Math.min(...y);
+    if ((1 / 1.1 < maxY) || (-1 / 1.1 > minY)) {
+      const range = Math.max(Math.abs(maxY), Math.abs(minY));
+      adjustBoundingBox([0 - max_x_width * 0.2, range * 1.1, max_x_width + max_x_width * 0.2, range * -1.1]);
     }
-  //window.requestAnimationFrame(Calc_and_draw);
-  window.requestAnimationFrame(Calc_and_draw);
-  //setInterval(Calc_and_draw,25);
+
+    while (last_t - board.getBoundingBox()[0] > max_x_width) {
+      t.shift();
+      y.shift();
+      yp.shift();
+      adjustBoundingBox([t[0] - max_x_width * 0.2, board.getBoundingBox()[1], t[0] + max_x_width * 1.1, board.getBoundingBox()[3]]);
+    }
+  }
+
+  /**
+   * Aktuelle Bounding Box setzen.
+   */
+  function adjustBoundingBox(newBox) {
+    board.setBoundingBox(newBox);
+  }
 }
+
+let pos_MSD = 0;
 
 function drawmsdsvg()
 {
-  SVG=document.getElementById("SVG")
+
+  // Get the inline SVG element
+  const svgElement = document.getElementById("svg");
+
+  if (!svgElement) {
+    console.error("SVG element not found!");
+    return;
+  }
+
+  // Manipulate the 'Mass' element (rectangle)
+  const mass = svgElement.querySelector('rect[inkscape\\:label="Mass"]');
+  if (mass) {
+    // Translate the mass horizontally (e.g., simulate displacement)
+    const currentX = parseFloat(mass.getAttribute("x")) || 0;
+    mass.setAttribute("x", currentX + 10); // Move 10 units to the right
+  }
+
+  // Manipulate the 'Spring' element
+  const spring = svgElement.querySelector('path.SPMDSVG');
+  if (spring) {
+    // Apply transformation to simulate extension/compression
+    spring.setAttribute("transform", "scale(1.2, 1)"); // Scale spring horizontally
+  }
+
+  // Manipulate the 'Damper'
+  const damper = svgElement.querySelector('text[tspan="c"]');
+  if (damper) {
+    const line = damper.closest("path");
+    if (line) {
+      // Simulate damper length adjustment by modifying end points
+      line.setAttribute("x2", parseFloat(line.getAttribute("x2")) + 10 || 50); // Modify endpoint
+    }
+  }
+
+  // Optional: Update arrows for "x" and "u"
+  const xArrow = svgElement.querySelector('path[inkscape\\:label="x_arrow"]');
+  if (xArrow) {
+    xArrow.setAttribute("transform", "translate(10, 0)"); // Move arrow slightly
+  }
+
+  const uArrow = svgElement.querySelector('path[inkscape\\:label="u_arrow"]');
+  if (uArrow) {
+    uArrow.setAttribute("transform", "translate(-5, 0)"); // Move arrow slightly
+  }
+  console.log("SVG manipulation complete!");
+
+  window.requestAnimationFrame(drawmsdsvg);
 }
 
 
@@ -351,4 +368,5 @@ function drawmassspringdamper()
 livemassspringdamper("time","app");
 livemassspringdamper("energy","app2");
 livemassspringdamper("3denergy","app3");
+drawmsdsvg();
 //document.querySelector('#app').innerHTML = drawnfunction;
