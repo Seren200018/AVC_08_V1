@@ -1,84 +1,391 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-<svg width="210mm" height="297mm" inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)" sodipodi:docname="smd.svg" version="1.1" viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd">
- <sodipodi:namedview bordercolor="#666666" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="530.34299" inkscape:cy="317.49233" inkscape:deskcolor="#d1d1d1" inkscape:document-units="mm" inkscape:pagecheckerboard="0" inkscape:pageopacity="0.0" inkscape:showpageshadow="2" inkscape:window-height="1017" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:zoom="0.8409652" pagecolor="#ffffff" showgrid="false" showguides="true">
-  <sodipodi:guide inkscape:locked="false" orientation="1,0" position="62.4518,206.07522"/>
-  <sodipodi:guide inkscape:locked="false" orientation="0,-1" position="79.866361,201.00464"/>
- </sodipodi:namedview>
- <defs>
-  <marker id="Arrow1L" overflow="visible" inkscape:collect="always" inkscape:isstock="true" inkscape:stockid="Arrow1L" markerHeight="3.4285715" markerWidth="6" orient="auto-start-reverse" preserveAspectRatio="xMidYMid" viewBox="0 0 8.75 5">
-   <path id="arrow1L" transform="scale(-.5)" d="m0 0 5-5-17.5 5 17.5 5z" fill="context-stroke" fill-rule="evenodd"/>
-  </marker>
-  <marker id="Arrow1L-9" overflow="visible" inkscape:collect="always" inkscape:isstock="true" inkscape:stockid="Arrow1L" markerHeight="3.4285715" markerWidth="6" orient="auto-start-reverse" preserveAspectRatio="xMidYMid" viewBox="0 0 8.75 5">
-   <path transform="scale(-.5)" d="m0 0 5-5-17.5 5 17.5 5z" fill="context-stroke" fill-rule="evenodd"/>
-  </marker>
- </defs>
- <g inkscape:groupmode="layer" inkscape:label="Ebene 1">
-  <rect transform="scale(1,-1)" x="48.683" y="-142.16" width="61.551" height="37.236" fill="#f95" stroke="#666" inkscape:label="Mass"/>
-  <g fill="none" stroke="#666">
-   <g>
-    <path  class ="SPMDSVG" d="m62.847 105.3v-5.0056l-7.4792-4.3181 14.758-8.5018-14.732-8.4372 14.849-8.4349-14.73-8.485 7.3933-4.3238-0.086-5.0257" inkscape:label="Spring" sodipodi:nodetypes="ccccccccc"/>
-    <path d="m92.992 104.74v-25.695" inkscape:label="path2148" sodipodi:nodetypes="cc"/>
-    <path d="m83.243 78.768h19.577"/>
-    <path d="m81.447 95.734 0.11798-37.064h23.184v37.064" sodipodi:nodetypes="cccc"/>
-    <path d="m93.141 58.809-0.08603-6.0496" sodipodi:nodetypes="cc"/>
-   </g>
-   <path d="m48.183 52.905h67.279" stroke-width=".8"/>
-   <g stroke-width=".45835">
-    <path class ="SPMDSVG" d="m49.21 53.109-3.8354-3.8768"/>
-    <path d="m50.837 53.109-3.8354-3.8768"/>
-    <path d="m52.464 53.109-3.8354-3.8768"/>
-    <path d="m54.091 53.109-3.8354-3.8768"/>
-    <path d="m57.344 53.109-3.8354-3.8768"/>
-    <path d="m58.971 53.109-3.8354-3.8768"/>
-    <path d="m60.598 53.109-3.8354-3.8768"/>
-    <path d="m62.225 53.109-3.8354-3.8768"/>
-    <path d="m67.105 53.109-3.8354-3.8768"/>
-    <path d="m109.4 53.109-3.8354-3.8768"/>
-    <path d="m101.27 53.109-3.8354-3.8768"/>
-    <path d="m81.747 53.109-3.8354-3.8768"/>
-    <path d="m112.66 53.109-3.8354-3.8768"/>
-    <path d="m55.718 53.109-3.8354-3.8768"/>
-    <path d="m114.28 53.109-3.8354-3.8768"/>
-    <path d="m104.52 53.109-3.8354-3.8768"/>
-    <path d="m78.493 53.109-3.8354-3.8768"/>
-    <path d="m107.78 53.109-3.8354-3.8768"/>
-    <path d="m111.03 53.109-3.8354-3.8768"/>
-    <path d="m102.9 53.109-3.8354-3.8768"/>
-    <path d="m106.15 53.109-3.8354-3.8768"/>
-    <path d="m115.91 53.109-3.8354-3.8768"/>
-    <path d="m76.866 53.109-3.8354-3.8768"/>
-    <path d="m70.359 53.109-3.8354-3.8768"/>
-    <path d="m68.732 53.109-3.8354-3.8768"/>
-    <path d="m71.986 53.109-3.8354-3.8768"/>
-    <path d="m73.612 53.109-3.8354-3.8768"/>
-    <path d="m65.478 53.109-3.8354-3.8768"/>
-    <path d="m63.852 53.109-3.8354-3.8768"/>
-    <path d="m99.641 53.109-3.8354-3.8768"/>
-    <path d="m94.761 53.109-3.8354-3.8768"/>
-    <path d="m96.388 53.109-3.8354-3.8768"/>
-    <path d="m91.507 53.109-3.8354-3.8768"/>
-    <path d="m98.015 53.109-3.8354-3.8768"/>
-    <path d="m83.373 53.109-3.8354-3.8768"/>
-    <path d="m88.254 53.109-3.8354-3.8768"/>
-    <path d="m89.881 53.109-3.8354-3.8768"/>
-    <path d="m80.12 53.109-3.8354-3.8768"/>
-    <path d="m93.134 53.109-3.8354-3.8768"/>
-    <path d="m75.239 53.109-3.8354-3.8768"/>
-    <path d="m85 53.109-3.8354-3.8768"/>
-    <path d="m86.627 53.109-3.8354-3.8768"/>
-   </g>
+
+<svg
+   width="210mm"
+   height="297mm"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="smd.svg"
+   version="1.1"
+   viewBox="0 0 210 297"
+   id="svg6055"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:current-layer="g6053"
+     inkscape:cx="485.75137"
+     inkscape:cy="430.45776"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:pagecheckerboard="0"
+     inkscape:pageopacity="0.0"
+     inkscape:showpageshadow="2"
+     inkscape:window-height="1017"
+     inkscape:window-maximized="1"
+     inkscape:window-width="1920"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:zoom="0.8409652"
+     pagecolor="#ffffff"
+     showgrid="false"
+     showguides="true"
+     id="namedview5910">
+    <sodipodi:guide
+       inkscape:locked="false"
+       orientation="1,0"
+       position="62.4518,206.07522"
+       id="guide5906" />
+    <sodipodi:guide
+       inkscape:locked="false"
+       orientation="0,-1"
+       position="79.866361,201.00464"
+       id="guide5908" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5917">
+    <marker
+       id="Arrow1L"
+       overflow="visible"
+       inkscape:collect="always"
+       inkscape:isstock="true"
+       inkscape:stockid="Arrow1L"
+       markerHeight="3.4285715"
+       markerWidth="6"
+       orient="auto-start-reverse"
+       preserveAspectRatio="xMidYMid"
+       viewBox="0 0 8.75 5">
+      <path
+         id="arrow1L"
+         transform="scale(-.5)"
+         d="m0 0 5-5-17.5 5 17.5 5z"
+         fill="context-stroke"
+         fill-rule="evenodd" />
+    </marker>
+    <marker
+       id="Arrow1L-9"
+       overflow="visible"
+       inkscape:collect="always"
+       inkscape:isstock="true"
+       inkscape:stockid="Arrow1L"
+       markerHeight="3.4285715"
+       markerWidth="6"
+       orient="auto-start-reverse"
+       preserveAspectRatio="xMidYMid"
+       viewBox="0 0 8.75 5">
+      <path
+         transform="scale(-.5)"
+         d="m0 0 5-5-17.5 5 17.5 5z"
+         fill="context-stroke"
+         fill-rule="evenodd"
+         id="path5914" />
+    </marker>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Ebene 1"
+     id="mass">
+    <rect
+       transform="scale(1,-1)"
+       x="48.683"
+       y="-142.16"
+       width="61.551"
+       height="37.236"
+       fill="#f95"
+       stroke="#666"
+       inkscape:label="Mass"
+       id="rect5919" />
+    <g
+       fill="none"
+       stroke="#666"
+       id="Boden"
+       inkscape:label="Boden"
+       style="image-rendering:optimizeQuality">
+      <title
+         id="title6564">Boden</title>
+      <path
+         d="m48.183 52.905h67.279"
+         stroke-width=".8"
+         id="path5933" />
+      <g
+         stroke-width=".45835"
+         id="g6019">
+        <path
+           class="SPMDSVG"
+           d="m49.21 53.109-3.8354-3.8768"
+           id="path5935" />
+        <path
+           d="m50.837 53.109-3.8354-3.8768"
+           id="path5937" />
+        <path
+           d="m52.464 53.109-3.8354-3.8768"
+           id="path5939" />
+        <path
+           d="m54.091 53.109-3.8354-3.8768"
+           id="path5941" />
+        <path
+           d="m57.344 53.109-3.8354-3.8768"
+           id="path5943" />
+        <path
+           d="m58.971 53.109-3.8354-3.8768"
+           id="path5945" />
+        <path
+           d="m60.598 53.109-3.8354-3.8768"
+           id="path5947" />
+        <path
+           d="m62.225 53.109-3.8354-3.8768"
+           id="path5949" />
+        <path
+           d="m67.105 53.109-3.8354-3.8768"
+           id="path5951" />
+        <path
+           d="m109.4 53.109-3.8354-3.8768"
+           id="path5953" />
+        <path
+           d="m101.27 53.109-3.8354-3.8768"
+           id="path5955" />
+        <path
+           d="m81.747 53.109-3.8354-3.8768"
+           id="path5957" />
+        <path
+           d="m112.66 53.109-3.8354-3.8768"
+           id="path5959" />
+        <path
+           d="m55.718 53.109-3.8354-3.8768"
+           id="path5961" />
+        <path
+           d="m114.28 53.109-3.8354-3.8768"
+           id="path5963" />
+        <path
+           d="m104.52 53.109-3.8354-3.8768"
+           id="path5965" />
+        <path
+           d="m78.493 53.109-3.8354-3.8768"
+           id="path5967" />
+        <path
+           d="m107.78 53.109-3.8354-3.8768"
+           id="path5969" />
+        <path
+           d="m111.03 53.109-3.8354-3.8768"
+           id="path5971" />
+        <path
+           d="m102.9 53.109-3.8354-3.8768"
+           id="path5973" />
+        <path
+           d="m106.15 53.109-3.8354-3.8768"
+           id="path5975" />
+        <path
+           d="m115.91 53.109-3.8354-3.8768"
+           id="path5977" />
+        <path
+           d="m76.866 53.109-3.8354-3.8768"
+           id="path5979" />
+        <path
+           d="m70.359 53.109-3.8354-3.8768"
+           id="path5981" />
+        <path
+           d="m68.732 53.109-3.8354-3.8768"
+           id="path5983" />
+        <path
+           d="m71.986 53.109-3.8354-3.8768"
+           id="path5985" />
+        <path
+           d="m73.612 53.109-3.8354-3.8768"
+           id="path5987" />
+        <path
+           d="m65.478 53.109-3.8354-3.8768"
+           id="path5989" />
+        <path
+           d="m63.852 53.109-3.8354-3.8768"
+           id="path5991" />
+        <path
+           d="m99.641 53.109-3.8354-3.8768"
+           id="path5993" />
+        <path
+           d="m94.761 53.109-3.8354-3.8768"
+           id="path5995" />
+        <path
+           d="m96.388 53.109-3.8354-3.8768"
+           id="path5997" />
+        <path
+           d="m91.507 53.109-3.8354-3.8768"
+           id="path5999" />
+        <path
+           d="m98.015 53.109-3.8354-3.8768"
+           id="path6001" />
+        <path
+           d="m83.373 53.109-3.8354-3.8768"
+           id="path6003" />
+        <path
+           d="m88.254 53.109-3.8354-3.8768"
+           id="path6005" />
+        <path
+           d="m89.881 53.109-3.8354-3.8768"
+           id="path6007" />
+        <path
+           d="m80.12 53.109-3.8354-3.8768"
+           id="path6009" />
+        <path
+           d="m93.134 53.109-3.8354-3.8768"
+           id="path6011" />
+        <path
+           d="m75.239 53.109-3.8354-3.8768"
+           id="path6013" />
+        <path
+           d="m85 53.109-3.8354-3.8768"
+           id="path6015" />
+        <path
+           d="m86.627 53.109-3.8354-3.8768"
+           id="path6017" />
+      </g>
+    </g>
+    <path
+       d="m119.76 104.74v14.238"
+       fill="#ff7f2a"
+       marker-end="url(#Arrow1L)"
+       stroke="#ffb380"
+       stroke-width=".5"
+       inkscape:label="x_arrow"
+       id="path6023" />
+    <path
+       d="m112.06 104.74h16.463"
+       fill="#4d4d4d"
+       stroke="#808080"
+       stroke-width=".5"
+       inkscape:label="x_line"
+       id="path6025" />
+    <text
+       x="122.70901"
+       y="111.97074"
+       fill="#ff7f2a"
+       font-family="sans-serif"
+       font-size="3.8806px"
+       stroke="#ffb380"
+       stroke-width=".26458"
+       text-align="center"
+       text-anchor="middle"
+       style="line-height:1.25"
+       inkscape:label="x_text"
+       xml:space="preserve"
+       id="text6029"><tspan
+         x="122.70901"
+         y="111.97074"
+         fill="#ff7f2a"
+         stroke="#ffb380"
+         stroke-width=".26458"
+         sodipodi:role="line"
+         id="tspan6027">x</tspan></text>
+    <path
+       d="m124.49 53.271v14.238"
+       fill="#ff7f2a"
+       marker-end="url(#Arrow1L-9)"
+       stroke="#ffb380"
+       stroke-width=".5"
+       inkscape:label="u_arrow"
+       id="path6031" />
+    <path
+       d="m116.79 53.271h16.463"
+       fill="#4d4d4d"
+       stroke="#808080"
+       stroke-width=".5"
+       inkscape:label="u_line"
+       id="path6033" />
+    <g
+       font-family="sans-serif"
+       font-size="3.8806px"
+       stroke-width=".26458"
+       text-anchor="middle"
+       id="g6051">
+      <text
+         x="127.43993"
+         y="60.458813"
+         fill="#ff7f2a"
+         stroke="#ffb380"
+         text-align="center"
+         style="line-height:1.25"
+         inkscape:label="u_text"
+         xml:space="preserve"
+         id="text6037"><tspan
+           x="127.43993"
+           y="60.458813"
+           fill="#ff7f2a"
+           stroke="#ffb380"
+           stroke-width=".26458"
+           sodipodi:role="line"
+           id="tspan6035">u</tspan></text>
+      <text
+         x="79.450699"
+         y="124.59888"
+         text-align="center"
+         style="line-height:1.25"
+         inkscape:label="m_text"
+         xml:space="preserve"
+         id="text6041"><tspan
+           x="79.450699"
+           y="124.59888"
+           stroke-width=".26458"
+           sodipodi:role="line"
+           id="tspan6039">m</tspan></text>
+      <text
+         x="47.181591"
+         y="81.202255"
+         text-align="center"
+         style="line-height:1.25"
+         inkscape:label="k_text"
+         xml:space="preserve"
+         id="text6045"><tspan
+           x="47.181591"
+           y="81.202255"
+           stroke-width=".26458"
+           sodipodi:role="line"
+           id="tspan6043">k</tspan></text>
+      <text
+         x="110.69146"
+         y="77.992767"
+         text-align="center"
+         style="line-height:1.25"
+         inkscape:label="c_text"
+         xml:space="preserve"
+         id="text6049"><tspan
+           x="110.69146"
+           y="77.992767"
+           stroke-width=".26458"
+           sodipodi:role="line"
+           id="tspan6047">c</tspan></text>
+    </g>
+    <g
+       id="g5931"
+       style="image-rendering:optimizeQuality;fill:none;stroke:#666666;stroke-opacity:1">
+      <path
+         d="m92.992 104.74v-25.695"
+         inkscape:label="path2148"
+         sodipodi:nodetypes="cc"
+         id="path5923"
+         style="fill:none;stroke:#666666;stroke-opacity:1" />
+      <path
+         d="m83.243 78.768h19.577"
+         id="path5925"
+         style="fill:none;stroke:#666666;stroke-opacity:1" />
+      <path
+         d="m81.447 95.734 0.11798-37.064h23.184v37.064"
+         sodipodi:nodetypes="cccc"
+         id="path5927"
+         style="fill:none;stroke:#666666;stroke-opacity:1" />
+      <path
+         d="m93.141 58.809-0.08603-6.0496"
+         sodipodi:nodetypes="cc"
+         id="path5929"
+         style="fill:none;stroke:#666666;stroke-opacity:1" />
+    </g>
+    <path
+       class="SPMDSVG"
+       d="m62.847 105.3v-5.0056l-7.4792-4.3181 14.758-8.5018-14.732-8.4372 14.849-8.4349-14.73-8.485 7.3933-4.3238-0.086-5.0257"
+       inkscape:label="Spring"
+       sodipodi:nodetypes="ccccccccc"
+       id="path5921"
+       style="image-rendering:optimizeQuality;fill:none;stroke:#666666;stroke-opacity:1" />
   </g>
-  <path d="m119.76 104.74v14.238" fill="#ff7f2a" marker-end="url(#Arrow1L)" stroke="#ffb380" stroke-width=".5" inkscape:label="x_arrow"/>
-  <path d="m112.06 104.74h16.463" fill="#4d4d4d" stroke="#808080" stroke-width=".5" inkscape:label="x_line"/>
-  <text x="122.70901" y="111.97074" fill="#ff7f2a" font-family="sans-serif" font-size="3.8806px" stroke="#ffb380" stroke-width=".26458" text-align="center" text-anchor="middle" style="line-height:1.25" inkscape:label="x_text" xml:space="preserve"><tspan x="122.70901" y="111.97074" fill="#ff7f2a" stroke="#ffb380" stroke-width=".26458" sodipodi:role="line">x</tspan></text>
-  <path d="m124.49 53.271v14.238" fill="#ff7f2a" marker-end="url(#Arrow1L-9)" stroke="#ffb380" stroke-width=".5" inkscape:label="u_arrow"/>
-  <path d="m116.79 53.271h16.463" fill="#4d4d4d" stroke="#808080" stroke-width=".5" inkscape:label="u_line"/>
-  <g font-family="sans-serif" font-size="3.8806px" stroke-width=".26458" text-anchor="middle">
-   <text x="127.43993" y="60.458813" fill="#ff7f2a" stroke="#ffb380" text-align="center" style="line-height:1.25" inkscape:label="u_text" xml:space="preserve"><tspan x="127.43993" y="60.458813" fill="#ff7f2a" stroke="#ffb380" stroke-width=".26458" sodipodi:role="line">u</tspan></text>
-   <text x="79.450699" y="124.59888" text-align="center" style="line-height:1.25" inkscape:label="m_text" xml:space="preserve"><tspan x="79.450699" y="124.59888" stroke-width=".26458" sodipodi:role="line">m</tspan></text>
-   <text x="47.181591" y="81.202255" text-align="center" style="line-height:1.25" inkscape:label="k_text" xml:space="preserve"><tspan x="47.181591" y="81.202255" stroke-width=".26458" sodipodi:role="line">k</tspan></text>
-   <text x="110.69146" y="77.992767" text-align="center" style="line-height:1.25" inkscape:label="c_text" xml:space="preserve"><tspan x="110.69146" y="77.992767" stroke-width=".26458" sodipodi:role="line">c</tspan></text>
-  </g>
- </g>
 </svg>

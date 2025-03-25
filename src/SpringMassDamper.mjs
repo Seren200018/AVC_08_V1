@@ -1,6 +1,8 @@
 import { create, all } from 'mathjs';
 import * as JXG from 'jsxgraph';
 import Plotly from 'plotly.js-dist-min';
+import anime from 'animejs/lib/anime.es.js';
+import rough from 'roughjs';
 
 // Aktiviert MathJax für JSXGraph
 JXG.Options.text.useMathJax = true;
@@ -255,6 +257,9 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
 
       if (p) p.setPosition([y[y.length - 1], yp[yp.length - 1], EKP[EKP.length - 1]]);
       x_0 = out.y.slice(-1)[0];
+
+      drawmsdbyhand(x_0[0])
+
     }
 
     last_t += cycleTime;
@@ -269,7 +274,10 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
       Plotly.redraw(divid);
     }
 
-    window.requestAnimationFrame(Calc_and_draw);
+    if (EKP.slice(-1) > 0.001)
+      window.requestAnimationFrame(Calc_and_draw);
+    else
+      console.log("Animation done!") //TO reduce load!
   }
 
   /**
@@ -298,75 +306,166 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
   }
 }
 
-let pos_MSD = 0;
+function drawmassspringdamper(x, startpositionx, startpositiony, ctx, rc, shadow=true, shadowoffset = 10) {
 
+  var masspositiony = x*100+startpositiony
+  var masspositionx = startpositionx
+  const Anzahl_Federelemente = 8
+  const Federendposition = 200+startpositiony
+
+  if (shadow){
+
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "rgba(0,0,0,1)";
+    ctx.filter = "blur(2.5px)"
+    ctx.fillRect(startpositionx+shadowoffset, shadowoffset+startpositiony+x*100, 100, 100);
+    //Linie über Feder
+    ctx.beginPath()
+    ctx.moveTo(masspositionx +50+shadowoffset, 101 + masspositiony+shadowoffset)
+    ctx.lineTo(masspositionx +50+shadowoffset, 121 + masspositiony+shadowoffset);
+    ctx.stroke();
+    //Linie Unter Feder
+    ctx.beginPath()
+    ctx.moveTo(masspositionx +50+shadowoffset,Federendposition+shadowoffset)
+    ctx.lineTo(masspositionx +50+shadowoffset, Federendposition+20+shadowoffset);
+    ctx.stroke();
+    //Boden
+    ctx.beginPath()
+    ctx.moveTo(startpositionx+shadowoffset, Federendposition+20+shadowoffset)
+    ctx.lineTo(startpositionx+120+shadowoffset, Federendposition+20+shadowoffset);
+    for (let i = 0; i < 30; i++)
+    {
+      ctx.moveTo(startpositionx+i*4+shadowoffset, Federendposition+20+shadowoffset)
+      ctx.lineTo(startpositionx+i*4+7+shadowoffset, Federendposition+27+shadowoffset);
+    }
+    ctx.stroke();
+  }
+  else
+  {
+    ctx.globalAlpha = 1;
+    ctx.filter = "blur(0px)"
+    ctx.fillStyle = "rgb(255,255,255)";
+    ctx.alpha = 0
+    ctx.fillRect(masspositionx, masspositiony, 100, 100);
+    rc.rectangle(masspositionx, masspositiony, 100, 100, {fill: 'grey', seed: 1});
+    rc.line(masspositionx +50, 101 + masspositiony,masspositionx +50, 121 + masspositiony,{seed:4})
+    rc.line(masspositionx +50,Federendposition,masspositionx +50, Federendposition+20,{seed:1})
+    rc.line(startpositionx, Federendposition+20,startpositionx+120,  Federendposition+20,{seed:2})
+    for (let i = 0; i < 30; i++)
+    {
+      rc.line(startpositionx+i*4, Federendposition+20,startpositionx+i*4+7, Federendposition+27,{seed:i+1})
+
+    }
+  }
+  var Equidistanter_Punktabstand = (Federendposition-(121 + masspositiony))/(Anzahl_Federelemente-1)
+  for (var i = 0; i < Anzahl_Federelemente; i++) {
+    if (i == 0) {
+      var startposition = [masspositionx +50, 121 + masspositiony]
+    }
+
+    var endposition =
+        [
+            masspositionx+25 + 50 * (i % 2),
+          (i+0.5)*Equidistanter_Punktabstand+(121 + masspositiony)//115+20 + masspositiony+Anzahl_Federelemente*i*5 - x*Federlementhoehe* (i+1)/Anzahl_Federelemente
+        ]
+    if (i==Anzahl_Federelemente-1)
+      endposition =
+          [
+            masspositionx+50,
+            Federendposition
+  ]
+    //Schatten
+    if (shadow) {
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.filter = "blur(2.5px)"
+      ctx.beginPath()
+      ctx.moveTo(startposition[0] + shadowoffset, startposition[1] + shadowoffset);
+      ctx.lineTo(endposition[0]   + shadowoffset, endposition[1]   + shadowoffset);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    else
+    {
+      ctx.filter = "blur(0px)"
+      for (var j = -1; j<1;j++ )
+        for (var k = -1; k<1;k++ )
+          rc.line(startposition[0]+j, startposition[1]+k, endposition[0]+k, endposition[1]+j, {seed: 10+j+k, strokeWidth: 0.5})
+    }
+
+    startposition = endposition;
+  }
+  //Boden
+
+
+
+}
+
+let k=1
+let sdir = 1;
+function drawmsdbyhand(x)
+{
+  //var canvas = document.getElementById('svg2');
+  //var width = canvas.width;
+  //var height = canvas.height;
+
+  // Get SVG
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const rc = rough.canvas(canvas);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Generate Rough Rectangle
+
+
+  k+=0.1*sdir; 
+  if (k>30) sdir=-1;
+  if (k<0) sdir=1;
+  drawmassspringdamper(x,20+ -1*(k*0.4), 100+ -1*(k*0.4),ctx, rc,true,k )
+  drawmassspringdamper(x,20+ -1*(k*0.4), 100+ -1*(k*0.4),ctx, rc,false,k )
+
+  //Unterer Teil Masse
+ // rc.line(masspositionx+25,130+masspositiony,masspositionx+74,150+masspositiony, {seed:1})
+  //rc.line(masspositionx+74,150+masspositiony,masspositionx+25,180+masspositiony, {seed:1})
+
+}
+
+
+let pos_MSD = 0;
+let position = 10;
 function drawmsdsvg()
 {
 
   // Get the inline SVG element
-  const svgElement = document.getElementById("svg");
 
-  if (!svgElement) {
+  const svgElement = document.getElementById("svg");
+  const svgElementdoc = svgElement.contentDocument;
+  let mass = svgElementdoc.getElementById("rect5919");
+  if (!svgElementdoc) {
     console.error("SVG element not found!");
     return;
   }
-
+  let position = 1
   // Manipulate the 'Mass' element (rectangle)
-  const mass = svgElement.querySelector('rect[inkscape\\:label="Mass"]');
-  if (mass) {
-    // Translate the mass horizontally (e.g., simulate displacement)
-    const currentX = parseFloat(mass.getAttribute("x")) || 0;
-    mass.setAttribute("x", currentX + 10); // Move 10 units to the right
+
+  function animate() {
+
+    position += 1;
+    mass.setAttribute("translate", "cy", position)
+    //mass.setAttributeNS("transform","translate("+ position+")");
+    requestAnimationFrame(animate);
+    console.log("SVG manipulation complete!");
   }
 
-  // Manipulate the 'Spring' element
-  const spring = svgElement.querySelector('path.SPMDSVG');
-  if (spring) {
-    // Apply transformation to simulate extension/compression
-    spring.setAttribute("transform", "scale(1.2, 1)"); // Scale spring horizontally
-  }
-
-  // Manipulate the 'Damper'
-  const damper = svgElement.querySelector('text[tspan="c"]');
-  if (damper) {
-    const line = damper.closest("path");
-    if (line) {
-      // Simulate damper length adjustment by modifying end points
-      line.setAttribute("x2", parseFloat(line.getAttribute("x2")) + 10 || 50); // Modify endpoint
-    }
-  }
-
-  // Optional: Update arrows for "x" and "u"
-  const xArrow = svgElement.querySelector('path[inkscape\\:label="x_arrow"]');
-  if (xArrow) {
-    xArrow.setAttribute("transform", "translate(10, 0)"); // Move arrow slightly
-  }
-
-  const uArrow = svgElement.querySelector('path[inkscape\\:label="u_arrow"]');
-  if (uArrow) {
-    uArrow.setAttribute("transform", "translate(-5, 0)"); // Move arrow slightly
-  }
   console.log("SVG manipulation complete!");
 
-  window.requestAnimationFrame(drawmsdsvg);
+  window.requestAnimationFrame(animate);
 }
 
 
-function drawmassspringdamper()
-{
-  let MSD = new mass_spring_damper(1, 0.1, 15);
-  let t = MSD.gettimeseries(0, 100, 10/100);
-  let y = MSD.solvemsd(100, [1, 0])
 
-  //let Bounding_Box = []
-  let board2 = JXG.JSXGraph.initBoard('app2',{ boundingbox: [0, 1, 100, -1], pan: {enabled:false},showNavigation:false, browserPan: {enabled:false},axis: true, grid: false});
-  let g2 = board2.create('curve', [t.toArray(),y[0]], {strokeColor:SecColor, strokeWidth:'2px',shadow: true});
-  board2.update();
-}
 
-//drawmassspringdamper();drawmassspringdamper();
+//drawmsdbyhand();
 livemassspringdamper("time","app");
 livemassspringdamper("energy","app2");
 livemassspringdamper("3denergy","app3");
-drawmsdsvg();
 //document.querySelector('#app').innerHTML = drawnfunction;
