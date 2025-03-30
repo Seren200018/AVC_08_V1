@@ -14,7 +14,7 @@
   <link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" type="text/javascript" charset="UTF-8"></script>  <!-- Normalize or reset CSS with your favorite library -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" rel="stylesheet">
-
+  <link rel="stylesheet" href="src/Foldable.css" type="text/css" />
   <!-- Load paper.css for happy printing -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/paper-css/0.4.1/paper.css" rel="stylesheet">
   <link href="https://latex.vercel.app/style.css" rel="stylesheet">
@@ -230,9 +230,49 @@
 </section>
 
 <section class="sheet libertinus padding-10mm">
-<svg id="svg3" width="300" height="300" style="background: transparent;"></svg>
+
 </section>
 
+<section class="sheet libertinus padding-10mm">
+  <style>
+    #ABC {
+      outline: 2px dashed lime;
+      width: 200px;
+      height: 100px;
+    }
+  </style>
+<div id="ABC">
+  <style>
+    #foldWrapper {
+      outline: 2px dashed lime;
+      width: 200px;
+      height: 100px;
+    }
+  </style>
+  <style>
+    #foldBottom {
+      outline: 2px dashed lime;
+      width: 200px;
+      height: 100px;
+    }
+  </style>
+</div>
+  <div id="foldWrapper">TEST</div>
+  <div id="foldBottom"><div id="app4" width="300" height="300" style="background: transparent;"></div>
+    <canvas id="canvas_app4"></canvas></div>
+  <script>
+    const main = document.getElementById('ABC');
+    const foldWrapper = document.getElementById('foldWrapper');
+    const foldBottom = document.getElementById('foldBottom');
+
+    main.addEventListener('click', () => {
+      console.log("Clicked!")
+      main.classList.toggle('moved');
+      foldWrapper.classList.toggle('show');
+      foldBottom.classList.toggle('folded');
+    });
+  </script>
+</section>
 </body>
 </html>
 <!--

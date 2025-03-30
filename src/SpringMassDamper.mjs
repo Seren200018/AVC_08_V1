@@ -90,24 +90,7 @@ export class mass_spring_damper {
   }
 }
 
-// Funktion: Ruft die aktuelle Scroll-Position ab
-document.getScroll = function () {
-  if (window.pageYOffset !== undefined) {
-    return [pageXOffset, pageYOffset];
-  } else {
-    const d = document,
-        r = d.documentElement,
-        b = d.body;
-
-    const sx = r.scrollLeft || b.scrollLeft || 0;
-    const sy = r.scrollTop || b.scrollTop || 0;
-
-    console.log(sy);
-    return [sy];
-  }
-};
-
-function livemassspringdamper(plottype = "time", divid, scrollexitation = false) {
+function Draw_MSD_Plot_to_div(plottype = "time", divid,canvasid, scrollexitation = false) {
   // Initialisiere das Masse-Feder-Dämpfer-System
   const MSD = new mass_spring_damper(1, 0.3, 10);
 
@@ -126,7 +109,7 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
   let axmin = plottype === "energy" ? 0 : -0.1;
 
   // Scrollzustand initialisieren
-  let scrollold = document.getScroll(), last_t = 0;
+  //let scrollold = document.getScroll(), last_t = 0;
 
   let board, fig, p;
 
@@ -235,12 +218,13 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
   /**
    * Hauptberechnungs- und Darstellungsfunktion.
    */
+  let last_t = 0;
   function Calc_and_draw() {
-    let scrollnew = document.getScroll();
+
     if (scrollexitation) {
       x_0[0] += (scrollnew[1] - scrollold[1]) / 100;
     }
-    scrollold = scrollnew;
+
 
     const cycleTime = (Date.now() - lastCycle) / 1000;
     lastCycle = Date.now();
@@ -258,8 +242,9 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
       if (p) p.setPosition([y[y.length - 1], yp[yp.length - 1], EKP[EKP.length - 1]]);
       x_0 = out.y.slice(-1)[0];
 
-      drawmsdbyhand(x_0[0])
-
+      // SMD zeichnen! Wenn Canvasid angegeben ist
+      if (canvasid != null)
+        drawmsdbyhand(x_0[0],canvasid)
     }
 
     last_t += cycleTime;
@@ -306,122 +291,260 @@ function livemassspringdamper(plottype = "time", divid, scrollexitation = false)
   }
 }
 
-function drawmassspringdamper(x, startpositionx, startpositiony, ctx, rc, shadow=true, shadowoffset = 10) {
+function draw_mass_spring_damper_sketch(x, startX, startY, ctx, rc, shadow = true, shadowOffset = 10, Fulldrawpercentage = 1, drawbase=true, mass = 1, spring = 1, damper = 1,drawcenter=false) {
+  const massCenterY = startY-150 + x * 25;
+  const massPosY = massCenterY - 50;  // top-left corner
+  const massPosX = startX - 50;       // center horizontally at base
+  const springEndY = startY-20;// base is at mass center + half mass height
+  const springXPos = damper > 0? massPosX -25:massPosX
+  const numSpringSegments = 8;
+  const blur = `blur(${1 + shadowOffset / 10}px)`;
 
-  var masspositiony = x*100+startpositiony
-  var masspositionx = startpositionx
-  const Anzahl_Federelemente = 8
-  const Federendposition = 200+startpositiony
+  const linedraw = Fulldrawpercentage > 0.33 ? 1 : Fulldrawpercentage * 3;
 
-  if (shadow){
+  const masssize = Math.cbrt(mass);  // not used yet, could scale the box later
 
+  if (drawcenter) {
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255,0,0,1"
+    ctx.moveTo(startX - 20, startY);
+    ctx.lineTo(startX + 20, startY);
+    ctx.moveTo(startX, startY - 20);
+    ctx.lineTo(startX, startY + 20);
+    ctx.stroke();
+  }
+  if (shadow) {
+    // Draw shadow behind the mass and spring
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = "rgba(0,0,0,1)";
-    ctx.filter = "blur(2.5px)"
-    ctx.fillRect(startpositionx+shadowoffset, shadowoffset+startpositiony+x*100, 100, 100);
-    //Linie über Feder
-    ctx.beginPath()
-    ctx.moveTo(masspositionx +50+shadowoffset, 101 + masspositiony+shadowoffset)
-    ctx.lineTo(masspositionx +50+shadowoffset, 121 + masspositiony+shadowoffset);
-    ctx.stroke();
-    //Linie Unter Feder
-    ctx.beginPath()
-    ctx.moveTo(masspositionx +50+shadowoffset,Federendposition+shadowoffset)
-    ctx.lineTo(masspositionx +50+shadowoffset, Federendposition+20+shadowoffset);
-    ctx.stroke();
-    //Boden
-    ctx.beginPath()
-    ctx.moveTo(startpositionx+shadowoffset, Federendposition+20+shadowoffset)
-    ctx.lineTo(startpositionx+120+shadowoffset, Federendposition+20+shadowoffset);
-    for (let i = 0; i < 30; i++)
-    {
-      ctx.moveTo(startpositionx+i*4+shadowoffset, Federendposition+20+shadowoffset)
-      ctx.lineTo(startpositionx+i*4+7+shadowoffset, Federendposition+27+shadowoffset);
-    }
-    ctx.stroke();
-  }
-  else
-  {
-    ctx.globalAlpha = 1;
-    ctx.filter = "blur(0px)"
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.alpha = 0
-    ctx.fillRect(masspositionx, masspositiony, 100, 100);
-    rc.rectangle(masspositionx, masspositiony, 100, 100, {fill: 'grey', seed: 1});
-    rc.line(masspositionx +50, 101 + masspositiony,masspositionx +50, 121 + masspositiony,{seed:4})
-    rc.line(masspositionx +50,Federendposition,masspositionx +50, Federendposition+20,{seed:1})
-    rc.line(startpositionx, Federendposition+20,startpositionx+120,  Federendposition+20,{seed:2})
-    for (let i = 0; i < 30; i++)
-    {
-      rc.line(startpositionx+i*4, Federendposition+20,startpositionx+i*4+7, Federendposition+27,{seed:i+1})
+    ctx.filter = blur;
+    ctx.strokeStyle = "rgba(0,0,0,1"
+    // Shadow rectangle for mass
+    ctx.fillRect(massPosX + shadowOffset, massPosY + shadowOffset, 100, 100);
 
-    }
-  }
-  var Equidistanter_Punktabstand = (Federendposition-(121 + masspositiony))/(Anzahl_Federelemente-1)
-  for (var i = 0; i < Anzahl_Federelemente; i++) {
-    if (i == 0) {
-      var startposition = [masspositionx +50, 121 + masspositiony]
+    // Shadow Spring line top
+    ctx.beginPath();
+    ctx.moveTo(springXPos + 50 + shadowOffset, massPosY + 101 + shadowOffset);
+    ctx.lineTo(springXPos + 50 + shadowOffset, massPosY + 121 + shadowOffset);
+    ctx.stroke();
+
+    // Shadow Spring line bot
+    ctx.beginPath();
+    ctx.moveTo(springXPos + 50 + shadowOffset, springEndY + shadowOffset);
+    ctx.lineTo(springXPos + 50 + shadowOffset, springEndY + 20 + shadowOffset);
+    ctx.stroke();
+
+    if (damper > 0)
+    {
+      ctx.strokeStyle = "rgba(0,0,0,1"
+      // Shadow Damper line top
+      ctx.beginPath();
+      ctx.moveTo(springXPos + 100 + shadowOffset, massPosY + 101 + shadowOffset);
+      ctx.lineTo(springXPos + 100 + shadowOffset, massPosY + 141 + shadowOffset);
+      ctx.stroke();
+      //Horizontal damper top line
+      ctx.beginPath();
+      ctx.moveTo(springXPos + 80 + shadowOffset, massPosY + 141 + shadowOffset);
+      ctx.lineTo(springXPos + 120 + shadowOffset, massPosY + 141 + shadowOffset);
+      ctx.stroke();
+      //Horizontal damper bottom line
+      ctx.beginPath();
+      ctx.moveTo(springXPos + 78 + shadowOffset, springEndY-60 + shadowOffset);
+      ctx.lineTo(springXPos + 78 + shadowOffset, springEndY + shadowOffset);
+      ctx.lineTo(springXPos + 122 + shadowOffset, springEndY + shadowOffset);
+      ctx.lineTo(springXPos + 122 + shadowOffset, springEndY-60 + shadowOffset);
+      ctx.stroke();
+      // Shadow Damper line bot
+      ctx.beginPath();
+      ctx.moveTo(springXPos + 100 + shadowOffset, springEndY + shadowOffset);
+      ctx.lineTo(springXPos + 100 + shadowOffset, springEndY + 20 + shadowOffset);
+      ctx.stroke();
+
+      ctx.fillRect(springXPos + 78+shadowOffset,massPosY + 140 + shadowOffset, 44,springEndY-massPosY-140)
     }
 
-    var endposition =
-        [
-            masspositionx+25 + 50 * (i % 2),
-          (i+0.5)*Equidistanter_Punktabstand+(121 + masspositiony)//115+20 + masspositiony+Anzahl_Federelemente*i*5 - x*Federlementhoehe* (i+1)/Anzahl_Federelemente
-        ]
-    if (i==Anzahl_Federelemente-1)
-      endposition =
-          [
-            masspositionx+50,
-            Federendposition
-  ]
-    //Schatten
-    if (shadow) {
-      ctx.fillStyle = "rgba(0,0,0,1)";
-      ctx.filter = "blur(2.5px)"
-      ctx.beginPath()
-      ctx.moveTo(startposition[0] + shadowoffset, startposition[1] + shadowoffset);
-      ctx.lineTo(endposition[0]   + shadowoffset, endposition[1]   + shadowoffset);
-      ctx.lineWidth = 3;
+
+    // Shadow base
+    if (drawbase) {
+      ctx.beginPath();
+      ctx.moveTo(startX + shadowOffset - 60, springEndY + 20 + shadowOffset);
+      ctx.lineTo(startX + shadowOffset + 60, springEndY + 20 + shadowOffset);
+      for (let i = 0; i < 30; i++) {
+        ctx.moveTo(startX - 60 + i * 4 + shadowOffset, springEndY + 20 + shadowOffset);
+        ctx.lineTo(startX - 60 + i * 4 + 7 + shadowOffset, springEndY + 27 + shadowOffset);
+      }
       ctx.stroke();
     }
-    else
+
+  } else {
+    // Main graphics
+    ctx.globalAlpha = 1;
+    ctx.filter = "blur(0px)";
+    ctx.fillStyle = "rgb(255,255,255)";
+    ctx.fillRect(massPosX, massPosY, 100, 100);
+
+    rc.rectangle(massPosX, massPosY, 100, 100, { fill: 'grey', seed: 1 });
+
+    //drawline from Spring to base
+    rc.line(springXPos + 50, massPosY + 101, springXPos + 50, massPosY + 121, { seed: 4 });
+    rc.line(springXPos + 50, springEndY, springXPos + 50, springEndY + 20, { seed: 1 });
+
+    if (damper > 0)
     {
-      ctx.filter = "blur(0px)"
-      for (var j = -1; j<1;j++ )
-        for (var k = -1; k<1;k++ )
-          rc.line(startposition[0]+j, startposition[1]+k, endposition[0]+k, endposition[1]+j, {seed: 10+j+k, strokeWidth: 0.5})
+      // Shadow Damper line top
+
+      rc.line(springXPos + 100, massPosY + 101,
+        springXPos + 100, massPosY + 141, { seed: 12 });
+
+      rc.line(springXPos + 80, massPosY + 141,
+          springXPos + 120 , massPosY + 141, { seed: 13 });
+
+      rc.line(springXPos + 78, springEndY-60,
+          springXPos + 78, springEndY, { seed: 143 });
+
+      rc.line(springXPos + 78, springEndY,
+          springXPos + 122, springEndY, { seed: 147 });
+
+      rc.line(springXPos + 122, springEndY,
+          springXPos + 122, springEndY-60, { seed: 141 });
+
+      rc.line(springXPos + 100, springEndY,
+          springXPos + 100, springEndY+20, { seed: 145 });
+
+      rc.rectangle(springXPos + 78, massPosY+ 141,44, springEndY-massPosY-140, { fill: 'white', seed: 2 ,fillStyle: 'solid'})
+      rc.rectangle(springXPos + 78, massPosY+ 141,44, springEndY-massPosY-140, { fill: 'grey', seed: 2 })
     }
 
-    startposition = endposition;
+
+    //DrawBaseLine
+    if (drawbase){
+      rc.line(startX - 60, springEndY + 20, startX + 60, springEndY + 20, { seed: 2 });
+      for (let i = 0; i < 30; i++) {
+        rc.line(startX - 60 + i * 4, springEndY + 20, startX - 60 + i * 4 + 7, springEndY + 27, { seed: i + 1 });
+      }
+    }
+
   }
-  //Boden
 
+  // === Draw the zigzag spring ===
+  const springSegmentLength = (springEndY - (massPosY + 121)) / (numSpringSegments - 1);
+  let startPoint = [springXPos + 50, massPosY + 121];
 
+  for (let i = 0; i < numSpringSegments; i++) {
+    let endPoint;
 
+    if (i === numSpringSegments - 1) {
+      endPoint = [springXPos + 50, springEndY];
+    } else {
+      endPoint = [
+        springXPos + 25 + 50 * (i % 2),
+        (i + 0.5) * springSegmentLength + (massPosY + 121),
+      ];
+    }
+    //Draw spring shadow
+    if (shadow) {
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.filter = blur;
+      ctx.beginPath();
+      ctx.moveTo(startPoint[0] + shadowOffset, startPoint[1] + shadowOffset);
+      ctx.lineTo(endPoint[0] + shadowOffset, endPoint[1] + shadowOffset);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    } else {
+      ctx.filter = "blur(0px)";
+      for (let j = -1; j < 1; j++) {
+        for (let k = -1; k < 1; k++) {
+          rc.line(
+              startPoint[0] + j,
+              startPoint[1] + k,
+              endPoint[0] + k,
+              endPoint[1] + j,
+              { seed: 10 + j + k, strokeWidth: 0.5 }
+          );
+        }
+      }
+    }
+
+    startPoint = endPoint;
+  }
+  //DrawMSDData
+  if (Fulldrawpercentage > 0)
+  {
+    const circlefill = Fulldrawpercentage<0.1?Fulldrawpercentage*10:1
+    rc.arc(massPosX+50,massPosY+50,8,8,Math.PI, Math.PI * 4*circlefill, true,{
+      fill: SecColor,
+      stroke: SecColor,
+      fillStyle: 'solid',
+      roughness:0.2,
+      seed: 1
+    })
+
+    rc.arc(springXPos+50,springEndY+massPosY/2-75,8,8,Math.PI, Math.PI * 4*circlefill, true,{
+      fill: SecColor,
+      stroke: SecColor,
+      fillStyle: 'solid',
+      roughness:0.2,
+      seed: 1
+    })
+
+    rc.arc(springXPos+100,springEndY+massPosY/2-65,8,8,Math.PI, Math.PI * 4*circlefill, true,{
+      fill: SecColor,
+      stroke: SecColor,
+      fillStyle: 'solid',
+      roughness:0.2,
+      seed: 1
+    })
+
+    rc.line(massPosX+50,massPosY+50,170,110, {stroke:SecColor, seed:1})
+    rc.line(170,110,210,110, {stroke:SecColor, seed:1})
+    ctx.fillStyle = "rgba(0,0,0,1)"
+    ctx.fillText(`m = ${mass}`, 175,107)
+
+    rc.line(springXPos+50,springEndY+massPosY/2-75,40,210, {stroke:SecColor, seed:1})
+    rc.line(40,210,20,210, {stroke:SecColor, seed:1})
+    ctx.fillStyle = "rgba(0,0,0,1)"
+    ctx.fillText(`k = ${spring}`, 21,208)
+
+    rc.line(springXPos+100,springEndY+massPosY/2-65,170,240, {stroke:SecColor, seed:1})
+    rc.line(170,240,210,240, {stroke:SecColor, seed:1})
+    ctx.fillStyle = "rgba(0,0,0,1)"
+    ctx.fillText(`d = ${damper}`, 172,238)
+  }
 }
+  //Boden
 
 let k=1
 let sdir = 1;
-function drawmsdbyhand(x)
+function drawmsdbyhand(x, canvasID)
 {
   //var canvas = document.getElementById('svg2');
   //var width = canvas.width;
   //var height = canvas.height;
 
   // Get SVG
-  const canvas = document.getElementById('canvas');
+  const canvas = document.getElementById(canvasID);
   const ctx = canvas.getContext('2d');
 
   const rc = rough.canvas(canvas);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Generate Rough Rectangle
 
+  // === Estimate the bounding box of the drawing ===
+  const sketchWidth = 120;   // width includes ground ticks
+  const sketchHeight = 247 + x * 100; // max height from top of spring to ground base
+
+  // === Center the drawing ===
+
+  const startX = (canvas.width - sketchWidth) / 2;
+  const startY = (canvas.height - sketchHeight) / 2;
 
   k+=0.1*sdir; 
   if (k>30) sdir=-1;
   if (k<0) sdir=1;
-  drawmassspringdamper(x,20+ -1*(k*0.4), 100+ -1*(k*0.4),ctx, rc,true,k )
-  drawmassspringdamper(x,20+ -1*(k*0.4), 100+ -1*(k*0.4),ctx, rc,false,k )
+
+  //Draw Sketch Mass Spring Damper
+  draw_mass_spring_damper_sketch(x,100+ -1*(k*0.4), 300+ -1*(k*0.4),ctx, rc,true,k )
+  draw_mass_spring_damper_sketch(x,100+ -1*(k*0.4), 300+ -1*(k*0.4),ctx, rc,false,k )
 
   //Unterer Teil Masse
  // rc.line(masspositionx+25,130+masspositiony,masspositionx+74,150+masspositiony, {seed:1})
@@ -436,7 +559,6 @@ function drawmsdsvg()
 {
 
   // Get the inline SVG element
-
   const svgElement = document.getElementById("svg");
   const svgElementdoc = svgElement.contentDocument;
   let mass = svgElementdoc.getElementById("rect5919");
@@ -446,6 +568,7 @@ function drawmsdsvg()
   }
   let position = 1
   // Manipulate the 'Mass' element (rectangle)
+
 
   function animate() {
 
@@ -462,10 +585,9 @@ function drawmsdsvg()
 }
 
 
-
-
 //drawmsdbyhand();
-livemassspringdamper("time","app");
-livemassspringdamper("energy","app2");
-livemassspringdamper("3denergy","app3");
+Draw_MSD_Plot_to_div("time","app", null);
+Draw_MSD_Plot_to_div("energy","app2", "canvas");
+Draw_MSD_Plot_to_div("3denergy","app3", null);
+Draw_MSD_Plot_to_div("3denergy","app3", "canvas_app4");
 //document.querySelector('#app').innerHTML = drawnfunction;
